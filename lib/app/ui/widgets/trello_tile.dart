@@ -77,7 +77,7 @@ class TrelloTile extends GetView<TrelloController> {
         );
 
     Widget _leftMoveButton(item) => sectionId == 0
-        ? const SizedBox()
+        ? const SizedBox(width: 50.0)
         : CupertinoButton(
             padding: EdgeInsets.zero,
             child:
@@ -116,7 +116,7 @@ class TrelloTile extends GetView<TrelloController> {
         );
 
     Widget _rightMoveButton(item) => sectionId == controller.sections.length - 1
-        ? const SizedBox()
+        ? const SizedBox(width: 50.0)
         : CupertinoButton(
             padding: EdgeInsets.zero,
             child:
@@ -142,49 +142,52 @@ class TrelloTile extends GetView<TrelloController> {
           ),
         );
 
+    Widget _sectionTitle = Container(
+      decoration: BoxDecoration(
+        color: const Color(0xffcfcfcf),
+        border: Border.all(color: CupertinoColors.black),
+      ),
+      height: 40.0,
+      width: double.infinity,
+      child: Center(
+        child: Text(
+          controller.sections[sectionId].title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: CupertinoColors.black, fontSize: 20),
+        ),
+      ),
+    );
+
+    Widget _sectionList = Container(
+      height: 400,
+      decoration: BoxDecoration(
+        color: const Color(0xffcfcfcf),
+        border: Border.all(color: CupertinoColors.black),
+      ),
+      child: GetBuilder<TrelloController>(
+        builder: (controller) {
+          return ListView.separated(
+            padding: const EdgeInsets.all(10.0),
+            scrollDirection: Axis.vertical,
+            itemBuilder: (context, index) {
+              final item = controller.sections[sectionId].items[index];
+              return item.itemType == ItemType.add
+                  ? _addItem(item)
+                  : _todoItem(item);
+            },
+            separatorBuilder: (context, index) {
+              return const SizedBox(height: 10.0);
+            },
+            itemCount: controller.sections[sectionId].items.length,
+          );
+        },
+      ),
+    );
+
     return Column(
       children: [
-        Container(
-          decoration: BoxDecoration(
-            color: const Color(0xffcfcfcf),
-            border: Border.all(color: CupertinoColors.black),
-          ),
-          height: 40.0,
-          width: double.infinity,
-          child: Center(
-            child: Text(
-              controller.sections[sectionId].title,
-              textAlign: TextAlign.center,
-              style:
-                  const TextStyle(color: CupertinoColors.black, fontSize: 20),
-            ),
-          ),
-        ),
-        Container(
-          height: 400,
-          decoration: BoxDecoration(
-            color: Color(0xffcfcfcf),
-            border: Border.all(color: CupertinoColors.black),
-          ),
-          child: GetBuilder<TrelloController>(
-            builder: (controller) {
-              return ListView.separated(
-                padding: const EdgeInsets.all(10.0),
-                scrollDirection: Axis.vertical,
-                itemBuilder: (context, index) {
-                  final item = controller.sections[sectionId].items[index];
-                  return item.itemType == ItemType.add
-                      ? _addItem(item)
-                      : _todoItem(item);
-                },
-                separatorBuilder: (context, index) {
-                  return const SizedBox(height: 10.0);
-                },
-                itemCount: controller.sections[sectionId].items.length,
-              );
-            },
-          ),
-        ),
+        _sectionTitle,
+        _sectionList,
       ],
     );
   }
